@@ -22,6 +22,7 @@
         .container {
             display: flex;
             height: 100vh;
+            flex-direction: row;
         }
         
         #map {
@@ -29,6 +30,7 @@
             border-radius: 15px;
             margin: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            min-height: 400px;
         }
         
         .sidebar {
@@ -40,6 +42,84 @@
             padding: 30px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             overflow-y: auto;
+        }
+        
+        /* 모바일 반응형 스타일 */
+        @media screen and (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                height: 100vh;
+            }
+            
+            #map {
+                flex: 1;
+                margin: 10px;
+                border-radius: 10px;
+                min-height: 300px;
+                order: 2;
+            }
+            
+            .sidebar {
+                width: auto;
+                height: auto;
+                max-height: 40vh;
+                margin: 10px;
+                padding: 20px;
+                border-radius: 10px;
+                order: 1;
+                overflow-y: auto;
+            }
+            
+            .title {
+                font-size: 20px;
+            }
+            
+            .subtitle {
+                font-size: 12px;
+            }
+            
+            .info-panel {
+                padding: 15px;
+                min-height: 200px;
+            }
+            
+            .terrain-name {
+                font-size: 18px;
+            }
+        }
+        
+        /* 매우 작은 화면 (스마트폰) */
+        @media screen and (max-width: 480px) {
+            body {
+                overflow: auto;
+            }
+            
+            .container {
+                height: auto;
+                min-height: 100vh;
+            }
+            
+            #map {
+                margin: 5px;
+                min-height: 250px;
+                height: 50vh;
+            }
+            
+            .sidebar {
+                margin: 5px;
+                padding: 15px;
+                max-height: none;
+                height: auto;
+            }
+            
+            .title {
+                font-size: 18px;
+            }
+            
+            .info-panel {
+                padding: 10px;
+                min-height: 150px;
+            }
         }
         
         .header {
@@ -436,14 +516,21 @@
         };
 
         function initMap() {
-            map = L.map('map').setView([36.5, 128.0], 6);
-            
-            L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://opentopomap.org">OpenTopoMap</a> contributors',
-                maxZoom: 15
-            }).addTo(map);
-            
-            addTerrainMarkers();
+            // 지도 컨테이너가 준비될 때까지 약간 지연
+            setTimeout(() => {
+                map = L.map('map').setView([36.5, 128.0], 6);
+                
+                L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://opentopomap.org">OpenTopoMap</a> contributors',
+                    maxZoom: 15
+                }).addTo(map);
+                
+                // 모바일에서 지도 크기 재조정
+                setTimeout(() => {
+                    map.invalidateSize();
+                    addTerrainMarkers();
+                }, 100);
+            }, 100);
         }
         
         function addTerrainMarkers() {
@@ -522,9 +609,27 @@
             `;
         }
         
-        // 지도 초기화
+        // 지도 초기화 및 윈도우 리사이즈 이벤트 처리
         document.addEventListener('DOMContentLoaded', function() {
             initMap();
+        });
+        
+        // 화면 크기 변경 시 지도 크기 재조정
+        window.addEventListener('resize', function() {
+            if (map) {
+                setTimeout(() => {
+                    map.invalidateSize();
+                }, 100);
+            }
+        });
+        
+        // 모바일 방향 전환 시 지도 크기 재조정
+        window.addEventListener('orientationchange', function() {
+            if (map) {
+                setTimeout(() => {
+                    map.invalidateSize();
+                }, 300);
+            }
         });
     </script>
 </body>
