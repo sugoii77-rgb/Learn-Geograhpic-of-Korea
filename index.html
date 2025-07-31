@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>한국의 주요 지형</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans KR', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        #map {
+            flex: 1;
+            border-radius: 15px;
+            margin: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .sidebar {
+            width: 350px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            margin: 20px 20px 20px 0;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            overflow-y: auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        
+        .lang-toggle {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .lang-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .info-panel {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            border-left: 5px solid #667eea;
+            min-height: 400px;
+        }
+        
+        .terrain-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .terrain-info {
+            line-height: 1.6;
+            color: #34495e;
+        }
+        
+        .terrain-info h3 {
+            color: #667eea;
+            margin: 15px 0 10px 0;
+            font-size: 16px;
+        }
+        
+        .terrain-info p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+        
+        .initial-message {
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            margin-top: 50px;
+        }
+        
+        .leaflet-popup-content-wrapper {
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        
+        .leaflet-popup-content {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c3e50;
+            text-align: center;
+            margin: 15px;
+        }
+        
+        .custom-marker {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="map"></div>
+        <div class="sidebar">
+            <div class="header">
+                <div class="title" id="main-title">한국의 주요 지형</div>
+                <div class="subtitle" id="subtitle">지형을 클릭하여 자세히 알아보세요</div>
+                <button class="lang-toggle" id="langToggle" onclick="toggleLanguage()">English</button>
+            </div>
+            
+            <div class="info-panel">
+                <div id="terrain-info">
+                    <div class="initial-message" id="initial-msg">
+                        지도에서 원하는 지형을 클릭해보세요!<br>
+                        각 지형의 형성 과정과 기후에 미치는 영향을 알아볼 수 있습니다.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script>
+        let currentLang = 'ko';
+        let map;
+        
+        const terrainData = {
+            ko: {
+                title: "한국의 주요 지형",
+                subtitle: "지형을 클릭하여 자세히 알아보세요",
+                langButton: "English",
+                initialMsg: "지도에서 원하는 지형을 클릭해보세요!<br>각 지형의 형성 과정과 기후에 미치는 영향을 알아볼 수 있습니다.",
+                terrains: [
+                    {
+                        name: "백두산",
+                        lat: 42.0062,
+                        lng: 128.0569,
+                        formation: "화산 활동으로 형성된 성층 화산으로, 약 200만년 전부터 화산 활동이 시작되어 현재의 모습을 갖추었습니다.",
+                        climate: "높은 고도로 인해 한반도 전체의 기후에 영향을 미치며, 북서 계절풍의 방향을 결정하는 중요한 역할을 합니다."
+                    },
+                    {
+                        name: "한라산",
+                        lat: 33.3617,
+                        lng: 126.5292,
+                        formation: "화산 활동으로 형성된 순상화산으로, 약 180만년 전부터 화산 활동이 시작되어 제주도의 중심을 이룹니다.",
+                        climate: "제주도의 기후를 조절하며, 고도에 따른 수직 기후대를 형성하여 다양한 식생 분포를 만듭니다."
+                    },
+                    {
+                        name: "태백산맥",
+                        lat: 37.0969,
+                        lng: 128.7378,
+                        formation: "중생대 쥐라기에 관입한 화강암이 오랜 침식 작용으로 현재의 산맥을 형성했습니다.",
+                        climate: "동해안과 서해안의 기후를 구분하는 분수령 역할을 하며, 지형성 강수를 유발합니다."
+                    },
+                    {
+                        name: "소백산맥",
+                        lat: 36.1599,
+                        lng: 128.4833,
+                        formation: "태백산맥에서 분기된 산맥으로, 화강암과 변성암으로 구성되어 완만한 산세를 이룹니다.",
+                        climate: "영남 내륙과 충청 지역의 기후 차이를 만드는 자연 장벽 역할을 합니다."
+                    },
+                    {
+                        name: "낙동강",
+                        lat: 35.1796,
+                        lng: 128.1076,
+                        formation: "태백산맥에서 발원하여 남해로 흘러가는 하천으로, 오랜 침식과 퇴적 작용으로 넓은 유역을 형성했습니다.",
+                        climate: "유역의 습도를 조절하고, 강 주변 지역의 기온을 완화하는 역할을 합니다."
+                    },
+                    {
+                        name: "금강",
+                        lat: 36.3504,
+                        lng: 127.3845,
+                        formation: "전북 장수군에서 발원하여 서해로 흘러가는 하천으로, 충청 평야를 관통하며 넓은 충적 평야를 만들었습니다.",
+                        climate: "충청 지역의 기후를 온화하게 만들고, 농업에 적합한 환경을 조성합니다."
+                    },
+                    {
+                        name: "한강",
+                        lat: 37.5665,
+                        lng: 126.9780,
+                        formation: "강원도에서 발원하여 서해로 흘러가는 하천으로, 수도권 지역을 관통하며 넓은 충적 평야를 형성했습니다.",
+                        climate: "수도권 지역의 습도를 조절하고, 도시 열섬 현상을 완화하는 중요한 역할을 합니다."
+                    },
+                    {
+                        name: "압록강",
+                        lat: 40.0690,
+                        lng: 124.3950,
+                        formation: "백두산에서 발원하여 서해로 흘러가는 국경 하천으로, 오랜 침식 작용으로 깊은 협곡을 형성했습니다.",
+                        climate: "북한 서부 지역의 기후에 영향을 미치며, 겨울철 한파의 통로 역할을 합니다."
+                    },
+                    {
+                        name: "대동강",
+                        lat: 39.0392,
+                        lng: 125.7625,
+                        formation: "랑림산맥에서 발원하여 서해로 흘러가는 하천으로, 평양 평야를 관통하며 비옥한 충적 평야를 만들었습니다.",
+                        climate: "평양 일대의 기후를 온화하게 만들고, 농업 발달에 중요한 역할을 합니다."
+                    },
+                    {
+                        name: "지리산",
+                        lat: 35.3384,
+                        lng: 127.7378,
+                        formation: "화강암과 편마암으로 이루어진 산으로, 오랜 침식 작용으로 현재의 웅장한 산세를 형성했습니다.",
+                        climate: "남부 지방의 기후 조절 역할을 하며, 풍부한 강수량과 온화한 기후를 만듭니다."
+                    },
+                    {
+                        name: "설악산",
+                        lat: 38.1199,
+                        lng: 128.4654,
+                        formation: "화강암으로 이루어진 산으로, 빙하기와 간빙기를 거치며 현재의 험준한 산세를 형성했습니다.",
+                        climate: "동해안 기후에 영향을 미치며, 지형성 강수를 유발하여 풍부한 강수량을 만듭니다."
+                    },
+                    {
+                        name: "개마고원",
+                        lat: 41.0000,
+                        lng: 128.0000,
+                        formation: "용암 대지가 오랜 침식을 받아 형성된 고원으로, 평균 해발 1,000m 이상의 높은 지대입니다.",
+                        climate: "한반도에서 가장 추운 지역으로, 대륙성 기후의 특징을 강하게 나타냅니다."
+                    }
+                ]
+            },
+            en: {
+                title: "Major Landforms of Korea",
+                subtitle: "Click on landforms to learn more",
+                langButton: "한국어",
+                initialMsg: "Click on any landform on the map!<br>Learn about their formation process and climate impact.",
+                terrains: [
+                    {
+                        name: "Mt. Baekdu",
+                        lat: 42.0062,
+                        lng: 128.0569,
+                        formation: "A stratovolcano formed by volcanic activity starting about 2 million years ago, creating its current magnificent form.",
+                        climate: "Due to its high altitude, it influences the climate of the entire Korean Peninsula and plays a crucial role in determining the direction of northwestern seasonal winds."
+                    },
+                    {
+                        name: "Mt. Halla",
+                        lat: 33.3617,
+                        lng: 126.5292,
+                        formation: "A shield volcano formed by volcanic activity starting about 1.8 million years ago, forming the center of Jeju Island.",
+                        climate: "Regulates Jeju Island's climate and creates vertical climate zones by altitude, forming diverse vegetation distribution."
+                    },
+                    {
+                        name: "Taebaek Mountains",
+                        lat: 37.0969,
+                        lng: 128.7378,
+                        formation: "Granite intrusions from the Jurassic period of the Mesozoic era formed the current mountain range through long-term erosion.",
+                        climate: "Acts as a watershed dividing the climates of the east and west coasts, causing orographic precipitation."
+                    },
+                    {
+                        name: "Sobaek Mountains",
+                        lat: 36.1599,
+                        lng: 128.4833,
+                        formation: "A mountain range branching from the Taebaek Mountains, composed of granite and metamorphic rocks, forming gentle mountain terrain.",
+                        climate: "Acts as a natural barrier creating climate differences between the Yeongnam inland and Chungcheong regions."
+                    },
+                    {
+                        name: "Nakdong River",
+                        lat: 35.1796,
+                        lng: 128.1076,
+                        formation: "Originating from the Taebaek Mountains and flowing to the South Sea, it formed a wide basin through long-term erosion and sedimentation.",
+                        climate: "Regulates humidity in the basin and moderates temperatures in areas along the river."
+                    },
+                    {
+                        name: "Geum River",
+                        lat: 36.3504,
+                        lng: 127.3845,
+                        formation: "Originating from Jangsu County, Jeollabuk-do and flowing to the West Sea, it created wide alluvial plains by crossing the Chungcheong Plain.",
+                        climate: "Makes the climate of the Chungcheong region mild and creates an environment suitable for agriculture."
+                    },
+                    {
+                        name: "Han River",
+                        lat: 37.5665,
+                        lng: 126.9780,
+                        formation: "Originating from Gangwon Province and flowing to the West Sea, it formed wide alluvial plains by crossing the metropolitan area.",
+                        climate: "Regulates humidity in the metropolitan area and plays an important role in mitigating urban heat island effects."
+                    },
+                    {
+                        name: "Amnok River",
+                        lat: 40.0690,
+                        lng: 124.3950,
+                        formation: "A border river originating from Mt. Baekdu and flowing to the West Sea, forming deep gorges through long-term erosion.",
+                        climate: "Influences the climate of western North Korea and serves as a pathway for winter cold waves."
+                    },
+                    {
+                        name: "Daedong River",
+                        lat: 39.0392,
+                        lng: 125.7625,
+                        formation: "Originating from the Rangrim Mountains and flowing to the West Sea, it created fertile alluvial plains by crossing the Pyongyang Plain.",
+                        climate: "Makes the climate around Pyongyang mild and plays an important role in agricultural development."
+                    },
+                    {
+                        name: "Mt. Jiri",
+                        lat: 35.3384,
+                        lng: 127.7378,
+                        formation: "A mountain composed of granite and gneiss, forming its current magnificent mountain terrain through long-term erosion.",
+                        climate: "Plays a climate regulation role in the southern regions, creating abundant precipitation and mild climate."
+                    },
+                    {
+                        name: "Mt. Seorak",
+                        lat: 38.1199,
+                        lng: 128.4654,
+                        formation: "A mountain composed of granite, forming its current rugged terrain through glacial and interglacial periods.",
+                        climate: "Influences the east coast climate and causes orographic precipitation, creating abundant rainfall."
+                    },
+                    {
+                        name: "Gaema Plateau",
+                        lat: 41.0000,
+                        lng: 128.0000,
+                        formation: "A plateau formed by long-term erosion of lava plateaus, with an average elevation of over 1,000m above sea level.",
+                        climate: "The coldest region on the Korean Peninsula, strongly exhibiting continental climate characteristics."
+                    }
+                ]
+            }
+        };
+
+        function initMap() {
+            map = L.map('map').setView([37.5, 127.5], 7);
+            
+            L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://opentopomap.org">OpenTopoMap</a> contributors',
+                maxZoom: 15
+            }).addTo(map);
+            
+            addTerrainMarkers();
+        }
+        
+        function addTerrainMarkers() {
+            const currentData = terrainData[currentLang];
+            
+            currentData.terrains.forEach((terrain, index) => {
+                const customIcon = L.divIcon({
+                    className: 'custom-marker',
+                    html: `<div style="width: 20px; height: 20px; background: linear-gradient(45deg, #667eea, #764ba2); border: 3px solid white; border-radius: 50%; box-shadow: 0 5px 15px rgba(0,0,0,0.3);"></div>`,
+                    iconSize: [26, 26],
+                    iconAnchor: [13, 13]
+                });
+                
+                const marker = L.marker([terrain.lat, terrain.lng], {icon: customIcon}).addTo(map);
+                
+                marker.bindPopup(`<strong>${terrain.name}</strong>`, {
+                    closeButton: false,
+                    className: 'custom-popup'
+                });
+                
+                marker.on('click', function() {
+                    map.flyTo([terrain.lat, terrain.lng], 10, {
+                        animate: true,
+                        duration: 1.5
+                    });
+                    
+                    showTerrainInfo(terrain);
+                });
+            });
+        }
+        
+        function showTerrainInfo(terrain) {
+            const infoPanel = document.getElementById('terrain-info');
+            const formationTitle = currentLang === 'ko' ? '지형 형성 과정' : 'Formation Process';
+            const climateTitle = currentLang === 'ko' ? '기후에 미치는 영향' : 'Climate Impact';
+            
+            infoPanel.innerHTML = `
+                <div class="terrain-name">${terrain.name}</div>
+                <div class="terrain-info">
+                    <h3>${formationTitle}</h3>
+                    <p>${terrain.formation}</p>
+                    <h3>${climateTitle}</h3>
+                    <p>${terrain.climate}</p>
+                </div>
+            `;
+        }
+        
+        function toggleLanguage() {
+            currentLang = currentLang === 'ko' ? 'en' : 'ko';
+            updateLanguage();
+            
+            // 지도의 마커들을 새로 추가
+            map.eachLayer(function(layer) {
+                if (layer instanceof L.Marker) {
+                    map.removeLayer(layer);
+                }
+            });
+            addTerrainMarkers();
+        }
+        
+        function updateLanguage() {
+            const currentData = terrainData[currentLang];
+            
+            document.getElementById('main-title').textContent = currentData.title;
+            document.getElementById('subtitle').textContent = currentData.subtitle;
+            document.getElementById('langToggle').textContent = currentData.langButton;
+            document.getElementById('initial-msg').innerHTML = currentData.initialMsg;
+            
+            // 정보 패널 초기화
+            document.getElementById('terrain-info').innerHTML = `
+                <div class="initial-message" id="initial-msg">
+                    ${currentData.initialMsg}
+                </div>
+            `;
+        }
+        
+        // 지도 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            initMap();
+        });
+    </script>
+</body>
+</html>
