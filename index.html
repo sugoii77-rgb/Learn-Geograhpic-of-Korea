@@ -254,6 +254,48 @@
                         lng: 128.0000,
                         formation: "용암 대지가 오랜 침식을 받아 형성된 고원으로, 평균 해발 1,000m 이상의 높은 지대입니다.",
                         climate: "한반도에서 가장 추운 지역으로, 대륙성 기후의 특징을 강하게 나타냅니다."
+                    },
+                    {
+                        name: "삼척 해안 (리아스식 해안)",
+                        lat: 37.4496,
+                        lng: 129.1658,
+                        formation: "지각 변동으로 침강한 산지가 바닷물에 잠기면서 형성된 복잡한 해안선으로, 만과 곶이 번갈아 나타나는 톱니바퀴 모양의 해안입니다.",
+                        climate: "복잡한 해안선으로 인해 해양성 기후의 영향을 강하게 받으며, 연중 온화하고 습도가 높은 기후를 보입니다."
+                    },
+                    {
+                        name: "죽변 해안 (해식동굴)",
+                        lat: 36.6394,
+                        lng: 129.4053,
+                        formation: "파도의 지속적인 침식 작용으로 해안 절벽에 형성된 동굴로, 암석의 약한 부분이 선택적으로 침식되어 만들어집니다.",
+                        climate: "해안 절벽으로 인해 바다에서 불어오는 바람이 강하며, 해양성 기후의 특징을 뚜렷하게 나타냅니다."
+                    },
+                    {
+                        name: "후포 부부바위 (시스택)",
+                        lat: 36.6789,
+                        lng: 129.4567,
+                        formation: "해식 작용으로 해안 절벽이 후퇴하면서 바다에 홀로 남겨진 바위 기둥으로, 파도와 바람의 침식으로 형성된 독특한 지형입니다.",
+                        climate: "바다에 둘러싸여 해양성 기후의 영향을 직접적으로 받으며, 염분과 습도가 높은 환경을 만듭니다."
+                    },
+                    {
+                        name: "제주 용두암 (화산암 해식지형)",
+                        lat: 33.5149,
+                        lng: 126.5161,
+                        formation: "화산 활동으로 분출된 용암이 바다에서 급속히 냉각되어 형성된 후, 파도의 침식 작용으로 현재의 용 머리 모양을 갖추게 되었습니다.",
+                        climate: "화산암 지형으로 인해 물의 배수가 잘 되며, 해안가에 위치하여 해양성 기후와 화산토의 특성이 결합된 독특한 환경을 만듭니다."
+                    },
+                    {
+                        name: "제주 주상절리대",
+                        lat: 33.2394,
+                        lng: 126.4206,
+                        formation: "용암이 바다에 흘러들어가면서 급속히 냉각될 때 수축하여 생긴 육각형 모양의 기둥 구조로, 자연이 만든 완벽한 기하학적 형태입니다.",
+                        climate: "주상절리의 틈새가 바닷바람의 통로 역할을 하여 독특한 미기후를 형성하며, 해양 생물의 서식지 역할을 합니다."
+                    },
+                    {
+                        name: "울릉도·독도 해안",
+                        lat: 37.5014,
+                        lng: 130.8732,
+                        formation: "화산 활동으로 형성된 화산도로, 해식 작용과 풍화 작용이 결합되어 절벽과 기암괴석이 발달한 독특한 해안 지형을 이룹니다.",
+                        climate: "사면이 바다로 둘러싸인 해양성 기후로, 연중 온화하고 강수량이 많으며, 안개가 자주 발생하는 특징을 보입니다."
                     }
                 ]
             },
@@ -346,13 +388,55 @@
                         lng: 128.0000,
                         formation: "A plateau formed by long-term erosion of lava plateaus, with an average elevation of over 1,000m above sea level.",
                         climate: "The coldest region on the Korean Peninsula, strongly exhibiting continental climate characteristics."
+                    },
+                    {
+                        name: "Samcheok Coast (Rias Coast)",
+                        lat: 37.4496,
+                        lng: 129.1658,
+                        formation: "Complex coastline formed when submerged mountains due to crustal movement were flooded by seawater, creating a sawtooth-shaped coast with alternating bays and headlands.",
+                        climate: "Due to the complex coastline, it is strongly influenced by maritime climate, showing mild and humid weather year-round."
+                    },
+                    {
+                        name: "Jukbyeon Coast (Sea Cave)",
+                        lat: 36.6394,
+                        lng: 129.4053,
+                        formation: "Caves formed in coastal cliffs through continuous wave erosion, created by selective erosion of weak parts of the rock.",
+                        climate: "Strong winds blow from the sea due to coastal cliffs, distinctly showing maritime climate characteristics."
+                    },
+                    {
+                        name: "Hupo Couple Rock (Sea Stack)",
+                        lat: 36.6789,
+                        lng: 129.4567,
+                        formation: "Rock pillars left alone in the sea as coastal cliffs retreated due to marine erosion, formed by unique topography created by wave and wind erosion.",
+                        climate: "Surrounded by the sea, directly influenced by maritime climate, creating an environment with high salinity and humidity."
+                    },
+                    {
+                        name: "Jeju Yongduam (Volcanic Rock Marine Landform)",
+                        lat: 33.5149,
+                        lng: 126.5161,
+                        formation: "Lava ejected by volcanic activity rapidly cooled in the sea, then shaped into its current dragon head form through wave erosion.",
+                        climate: "Volcanic rock terrain provides good drainage, and its coastal location creates a unique environment combining maritime climate with volcanic soil characteristics."
+                    },
+                    {
+                        name: "Jeju Columnar Joint",
+                        lat: 33.2394,
+                        lng: 126.4206,
+                        formation: "Hexagonal pillar structures formed when lava flowed into the sea and rapidly cooled, contracting to create perfect geometric forms made by nature.",
+                        climate: "Gaps in the columnar joints serve as passages for sea winds, forming unique microclimates and serving as habitats for marine life."
+                    },
+                    {
+                        name: "Ulleungdo·Dokdo Coast",
+                        lat: 37.5014,
+                        lng: 130.8732,
+                        formation: "Volcanic islands formed by volcanic activity, with unique coastal topography of cliffs and strange rocks developed through combination of marine erosion and weathering.",
+                        climate: "Maritime climate surrounded by sea on all sides, mild year-round with abundant precipitation and frequent fog."
                     }
                 ]
             }
         };
 
         function initMap() {
-            map = L.map('map').setView([37.5, 127.5], 7);
+            map = L.map('map').setView([36.5, 128.0], 6);
             
             L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://opentopomap.org">OpenTopoMap</a> contributors',
@@ -411,26 +495,28 @@
             currentLang = currentLang === 'ko' ? 'en' : 'ko';
             updateLanguage();
             
-            // 지도의 마커들을 새로 추가
+            // 지도의 모든 마커와 팝업 제거
             map.eachLayer(function(layer) {
                 if (layer instanceof L.Marker) {
                     map.removeLayer(layer);
                 }
             });
+            
+            // 새로운 언어로 마커들을 다시 추가
             addTerrainMarkers();
         }
         
         function updateLanguage() {
             const currentData = terrainData[currentLang];
             
+            // UI 텍스트 업데이트
             document.getElementById('main-title').textContent = currentData.title;
             document.getElementById('subtitle').textContent = currentData.subtitle;
             document.getElementById('langToggle').textContent = currentData.langButton;
-            document.getElementById('initial-msg').innerHTML = currentData.initialMsg;
             
-            // 정보 패널 초기화
+            // 정보 패널을 초기 상태로 재설정
             document.getElementById('terrain-info').innerHTML = `
-                <div class="initial-message" id="initial-msg">
+                <div class="initial-message">
                     ${currentData.initialMsg}
                 </div>
             `;
